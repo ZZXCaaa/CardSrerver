@@ -13,13 +13,8 @@ export class ChatController {
         this.chatService = chatService;
     }
 
-    bindEvents() {
-        this.socket.on("sendMessage", (payload) =>
-        {
-            const saved = this.chatService.saveMessage(payload);
-            this.chatService.broadcast("message", saved);
-        });
-
+    bindEvents()
+    {
         this.socket.on("getMessages", () =>
         {
             this.socket.emit("messages", this.chatService.getMessages());

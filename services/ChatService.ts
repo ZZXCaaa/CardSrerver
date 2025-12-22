@@ -6,13 +6,7 @@ import type {IChatService} from "../infrastructure/IChatService.js";
 export class ChatService implements IChatService
 {
     private messages: Message[] = [];
-    private io: Server;
-
-    constructor(io: Server)
-    {
-        this.io = io;
-    }
-
+    constructor() {}
     saveMessage(msg: Message): Message
     {
         msg.timestamp = Date.now();
@@ -23,10 +17,5 @@ export class ChatService implements IChatService
     getMessages(): Message[]
     {
         return this.messages;
-    }
-
-    broadcast(event: string, data: any): void
-    {
-        this.io.emit(event, data);
     }
 }
