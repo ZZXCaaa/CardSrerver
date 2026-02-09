@@ -4,3 +4,4 @@ export interface IChatService {
     saveMessage(msg: Message): Message;
     getMessages(): Message[];
 }
+

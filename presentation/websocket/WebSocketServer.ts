@@ -1,10 +1,13 @@
 import { WebSocketServer } from "ws";
 import {WebSocketRouter} from "./WebSocketRouter.js";
+import {ChatService} from "../../services/ChatService.js";
 
 
 export function startWebSocketServer(port: number) {
     const wss = new WebSocketServer({ port });
-    const router = new WebSocketRouter();
+    let router: WebSocketRouter;
+    const chatService = new ChatService();
+    router = new WebSocketRouter(chatService,wss);
 
     console.log(`✅ WebSocket running on ws://localhost:${port}`);
 

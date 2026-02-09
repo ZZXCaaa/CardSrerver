@@ -13,9 +13,9 @@ export class ChatService implements IChatService
         this.messages.push(msg);
         return msg;
     }
-
     getMessages(): Message[]
     {
         return this.messages;
     }
+
 }

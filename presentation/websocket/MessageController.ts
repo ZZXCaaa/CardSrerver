@@ -1,22 +1,54 @@
-import { WebSocket } from "ws";
+import {WebSocket, type WebSocketServer} from "ws";
 import { ChatService } from "../../services/ChatService.js";
 import {type Message} from "../../Core/Enity/Message.js";
 export class MessageController {
-    constructor(private chatService: ChatService) {}
+    constructor(private chatService: ChatService
+                ,private wss:WebSocketServer) {}
 
     send(ws: WebSocket, payload: any) {
-        // 创建一个符合 Message 接口的对象
-        const msg: Message = {
-            from: payload.user,
-            text: payload.text,
-            timestamp: 0  // 初始值，将由 chatService 更新
-        };
+        try
+        {
+            const msg: Message = {
+                from: payload.user,
+                text: payload.text,
+                timestamp: Date.now() // 初始值，将由 chatService 更新
+            };
 
-        const saved = this.chatService.saveMessage(msg);
+            const saved = this.chatService.saveMessage(msg);
+            this.broadcastToAll({
+                type: "chat.message",
+                payload: saved
+            })
+            ws.send(JSON.stringify({
+                type: "chat.message",
+                payload: saved
+            }));
+        }
+        catch (error)
+        {
+            ws.send(JSON.stringify({
+                type: "error",
+                payload: { message: "Failed to send message" }
+            }))
 
-        ws.send(JSON.stringify({
-            type: "chat.message",
-            payload: saved
-        }));
+        }
     }
-}
+    getMessages(ws: WebSocket) {
+        const messages = this.chatService.getMessages()
+        ws.send(JSON.stringify({
+            type: "messages",
+            payload: messages
+        }))
+    }
+
+    private broadcastToAll(data: any): void {
+        const message = JSON.stringify(data);
+
+        this.wss.clients.forEach(client => {
+            if (client.readyState == WebSocket.OPEN) {
+                client.send(message);
+            }
+        });
+    }
+
+    }
