@@ -4,9 +4,11 @@ import type {IgameService} from "../infrastructure/IgameService.js";
 export class GameService implements IgameService
 {
     constructor(private wss:WebSocketServer) {this.wss = wss;}
+    private cardArray:Array<number> = [];
     CardArray(plaayer:number):Array<number>
     {
         let cardArray:Array<number> = [];
+        let recardArray:Array<number> = [];
         if (cardArray.length == 0)
         {
             for (let i = 0; i < plaayer*13; i++)
@@ -20,11 +22,11 @@ export class GameService implements IgameService
         {
              let index = Math.floor(Math.random() * (i + 1));
              [cardArray[i], cardArray[index]] = [cardArray[index], cardArray[i]];
-
         }
         console.log(cardArray);
-        return cardArray;
+        return recardArray = cardArray.slice(0,13);
     }
+
     dealCards(plaayer: number): Array<number>
     {
         return this.CardArray(plaayer);
